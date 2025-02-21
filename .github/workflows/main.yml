@@ -36,6 +36,7 @@ jobs:
         run: |
           wget --header "Authorization: Basic $(echo -n $PCC_USER:$PCC_PASS | base64 | tr -d '\n')" "$PCC_CONSOLE_URL/api/v1/util/twistcli"
           chmod a+x ./twistcli
+          ./twistcli
           ./twistcli images scan --address $PCC_CONSOLE_URL --user $PCC_USER --password $PCC_PASS --details --docker-address http://docker:2375 my-react-app
           PCC_USER: ${{ secrets.PCC_USER }}
           PCC_PASS: ${{ secrets.PCC_PASS }}
