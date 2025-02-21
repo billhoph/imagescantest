@@ -1,12 +1,6 @@
 # Use the official NGINX image as the base image
 FROM nginx:alpine
 
-# Remove the default NGINX configuration file
-RUN rm -rf /usr/share/nginx/html/*
-
-# Copy the build files from React to the NGINX directory
-COPY build /usr/share/nginx/html
-
 # Expose port 80
 EXPOSE 80
 
