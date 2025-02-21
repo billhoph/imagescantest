@@ -23,8 +23,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: List root directory contents
+        run: ls -la
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
       - name: Build Docker image
         run: docker build -t my-react-app .
+
+      - name: Scan Docker image
+        run: |
+          wget --header "Authorization: Basic $(echo -n $PCC_USER:$PCC_PASS | base64 | tr -d '\n')" "$PCC_CONSOLE_URL/api/v1/util/twistcli"
+          chmod a+x ./twistcli
+          ./twistcli images scan --address $PCC_CONSOLE_URL --user $PCC_USER --password $PCC_PASS --details --docker-address http://docker:2375 $CI_REGISTRY/gitlab/yelb-ui:latest
+        env:
+          PCC_USER: ${{ secrets.PCC_USER }}
+          PCC_PASS: ${{ secrets.PCC_PASS }}
+          PCC_CONSOLE_URL: ${{ secrets.PCC_CONSOLE_URL }}
+          CI_REGISTRY: ${{ secrets.CI_REGISTRY }}
