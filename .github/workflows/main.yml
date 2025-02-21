@@ -1,38 +1,34 @@
-name: Test Docker on GitHub Actions
+name: Build Docker Image
 
 on:
-  pull_request:
   push:
-    branches: 
-      - master
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  push_container:
+  build:
     runs-on: ubuntu-latest
+
     services:
       docker:
-        image: docker:dind
-        options: --privileged
+        image: docker:19.03.12
+        options: --privileged # Required for Docker-in-Docker
         ports:
           - 2375:2375
-    container:
-      image: ubuntu:latest
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-      - name: Install Docker
-        run: |
-          apt-get update
-          apt-get install -y docker.io
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
 
-      - name: Test connection
-        run: |
-          apt-get update
-          apt-get install -y iputils-ping
-          ping -c 3 docker
-
-      - name: Test Docker
-        run: |
-          docker version
-          docker info
+      - name: Build Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: false
+          tags: my-react-app:latest
